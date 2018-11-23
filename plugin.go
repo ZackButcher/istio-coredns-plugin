@@ -63,7 +63,9 @@ func main() {
 	grpcServer := grpc.NewServer()
 
 	dnsapi.RegisterDnsServiceServer(grpcServer, h)
-	grpcServer.Serve(listener)
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Printf("grpc Serve failed with: %v\n", err)
+	}
 	close(h.stop)
 }
 
@@ -84,11 +86,13 @@ func (h *IstioServiceEntries) readServiceEntries(vip string) {
 			// NO DNS based service discovery for service entries
 			// that specify NONE as the resolution. NONE implies
 			// that Istio should use the IP provided by the caller
+			log.Printf("Ignoring invalid service entry: %s.%s - entry.Resolution == NONE\n", e.Name, e.Namespace)
 			continue
 		}
 
 		addresses := entry.Addresses
 		if len(addresses) == 0 && vip != "" {
+			log.Printf("No addresses in the service entry, defaulting to VIP\n")
 			// If the ServiceEntry has no Addresses, map to a user-supplied default value, if provided
 			addresses = []string{vip}
 		}
@@ -116,7 +120,7 @@ func (h *IstioServiceEntries) readServiceEntries(vip string) {
 		h.dnsEntries[k] = v
 	}
 	h.mapMutex.Unlock()
-	//log.Printf("Found %d service entries and have %v\n", len(serviceEntries), h.dnsEntries)
+	log.Printf("Found %d service entries and have %v\n", len(serviceEntries), h.dnsEntries)
 }
 
 func convertToVIPs(addresses []string) []net.IP {
@@ -181,8 +185,8 @@ func (h *IstioServiceEntries) Query(ctx context.Context, in *dnsapi.DnsPacket) (
 				log.Printf("Found %s->%v\n", q.Name, vips)
 				response.Answer = a(q.Name, vips)
 			}
-			//default:
-			//	log.Printf("Unknown query type: %v\n", q)
+		default:
+			log.Printf("Unknown query type: %v\n", q)
 		}
 	}
 	if len(response.Answer) == 0 {

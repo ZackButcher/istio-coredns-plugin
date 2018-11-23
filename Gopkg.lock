@@ -193,14 +193,6 @@
   version = "v1.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:2932c46452df92857e62a83966d8888432f9527ac98a133be5d156567389cc12"
-  name = "github.com/istio-ecosystem/istio-coredns-plugin"
-  packages = ["api"]
-  pruneopts = ""
-  revision = "913318ff584d1e522ba1d8195fa4a2e9df51fa91"
-
-[[projects]]
   digest = "1:b79fc583e4dc7055ed86742e22164ac41bf8c0940722dbcb600f1a3ace1a8cb5"
   name = "github.com/json-iterator/go"
   packages = ["."]
@@ -814,7 +806,6 @@
   analyzer-version = 1
   input-imports = [
     "github.com/golang/protobuf/proto",
-    "github.com/istio-ecosystem/istio-coredns-plugin/api",
     "github.com/miekg/dns",
     "golang.org/x/net/context",
     "google.golang.org/grpc",

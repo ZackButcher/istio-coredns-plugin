@@ -93,6 +93,9 @@ spec:
       - name: istio-coredns-plugin
         command:
         - /usr/local/bin/plugin
+        args:
+        - "--default-address"
+        - "10.0.0.1"
         image: rshriram/istio-coredns-plugin:latest
         imagePullPolicy: Always
         ports:
